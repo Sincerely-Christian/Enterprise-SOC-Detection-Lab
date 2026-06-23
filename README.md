@@ -16,6 +16,9 @@ The project includes:
 * Group Policy security hardening
 * Vulnerability remediation and risk acceptance documentation
 
+<img width="1536" height="1024" alt="SOC HomeLab" src="https://github.com/user-attachments/assets/25f3dfe5-84b4-40d0-9755-82bfec377714" />
+
+
 ---
 
 ## Lab Network
@@ -503,7 +506,8 @@ Windows Defender Firewall was confirmed enabled for Domain, Private, and Public 
 
 #### Windows Defender Firewall enabled
 
-<img width="1728" height="1117" alt="Authd Listening" src="https://github.com/user-attachments/assets/804afa2f-bb14-45a9-8f7e-7956b29d17a9" />
+<img width="1728" height="1117" alt="Windows Defender GPO Settings" src="https://github.com/user-attachments/assets/ca662f1a-877e-420f-9d33-827d0ca768c1" />
+
 
 ---
 
@@ -725,6 +729,18 @@ sudo ss -tulpn | grep 1515
 ```
 
 The service was still listening through Docker proxy, so the finding was documented rather than hidden.
+
+---
+
+# Key Outcomes
+
+- Successfully deployed Active Directory environment
+- Integrated Sysmon with Wazuh SIEM
+- Generated and detected multiple attack simulations
+- Performed vulnerability assessments using Greenbone/OpenVAS
+- Implemented remediation controls through Group Policy and Linux hardening
+- Documented accepted risks and compensating controls
+- Mapped detections to MITRE ATT&CK techniques
 
 ---
 
