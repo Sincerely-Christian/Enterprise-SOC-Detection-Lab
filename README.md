@@ -56,13 +56,13 @@ The project includes:
 
 ---
 
-# Phase 12 - Detection Engineering
+# Phase 1 - Detection Engineering
 
-Phase 12 generated controlled security events and verified that the lab could detect them through Windows logs, Sysmon, and Wazuh.
+Phase 1 generated controlled security events and verified that the lab could detect them through Windows logs, Sysmon, and Wazuh.
 
 ---
 
-## 12.1 Detection One: Nmap Reconnaissance
+## 1.1 Detection One: Nmap Reconnaissance
 
 ### Objective
 
@@ -106,35 +106,21 @@ nmap -sV -Pn 172.16.0.100
 
 #### Kali scan against Domain Controller
 
-**Screenshot placement: 12.1 Screenshot 1**
 <img width="1728" height="1117" alt="DC Nmap Scan" src="https://github.com/user-attachments/assets/63f2dd26-80dd-47c8-ad45-e0925d27cc2c" />
-
-
-**Use screenshot:** Kali terminal showing `nmap -sV -Pn 172.16.0.1`
 
 #### Sysmon network connection event
 
-**Screenshot placement: 12.1 Screenshot 2**
+<img width="1728" height="1117" alt="DC Sysmon Event3" src="https://github.com/user-attachments/assets/78278f19-30c0-4d9e-a5c2-19c1d88b1893" />
 
-![Sysmon Event ID 3 network connection](screenshots/nmap/03-dc-sysmon-event3.png)
-
-**Use screenshot:** Event Viewer showing Sysmon Event ID 3 with source IP `172.16.0.102`
 
 #### Wazuh detection of Kali source IP
 
-**Screenshot placement: 12.1 Screenshot 3**
+<img width="1728" height="1117" alt="Wazuh Nmap Detection " src="https://github.com/user-attachments/assets/29e69648-5708-4be4-96cc-8acb869364f5" />
 
-![Wazuh detection of Kali source IP](screenshots/nmap/05-wazuh-kali-source-ip.png)
-
-**Use screenshot:** Wazuh Discover search showing `data.win.eventdata.sourceIp:172.16.0.102`
 
 #### Kali scan against Windows 11 Client
 
-**Screenshot placement: 12.1 Screenshot 4**
-
-![Kali Nmap scan against Windows 11 Client](screenshots/nmap/02-kali-nmap-win11.png)
-
-**Use screenshot:** Kali terminal showing `nmap -sV -Pn 172.16.0.100`
+<img width="1728" height="1117" alt="Win11 Client Nmap Scan" src="https://github.com/user-attachments/assets/67a53af2-81ae-46e4-896b-4f1d4d5a7b6f" />
 
 ### Analyst Notes
 
@@ -142,7 +128,7 @@ The Kali system performed service discovery against internal hosts. The activity
 
 ---
 
-## 12.2 Detection Two: Failed Domain Logons
+## 1.2 Detection Two: Failed Domain Logons
 
 ### Objective
 
@@ -188,37 +174,20 @@ runas /user:mydomain\Admin-C-James cmd
 
 ### Evidence
 
-#### Windows client context
+#### Windows client context & Failed runas attempts
 
-**Screenshot placement: 12.2 Screenshot 1**
+<img width="1728" height="1117" alt="Win 11 Context and failed runas attempts" src="https://github.com/user-attachments/assets/069d1371-1fc0-4ec4-b920-8fe59d056c41" />
 
-![Windows 11 hostname whoami ipconfig](screenshots/failed-logons/01-win11-context.png)
-
-**Use screenshot:** PowerShell showing `hostname`, `whoami`, and `ipconfig`
-
-#### Failed runas attempts
-
-**Screenshot placement: 12.2 Screenshot 2**
-
-![Failed runas attempts](screenshots/failed-logons/02-runas-failed-attempts.png)
-
-**Use screenshot:** Command line showing repeated failed `runas` attempts
 
 #### Domain Controller authentication failure
 
-**Screenshot placement: 12.2 Screenshot 3**
+<img width="1728" height="1117" alt="DC Event Viewer Failed Login" src="https://github.com/user-attachments/assets/d71125ff-6e3c-477c-ad02-784b88515dbf" />
 
-![Domain Controller Event 4771](screenshots/failed-logons/03-dc-eventviewer-4771.png)
-
-**Use screenshot:** Event Viewer showing Kerberos pre-authentication failure Event ID 4771
 
 #### Wazuh failed authentication event
 
-**Screenshot placement: 12.2 Screenshot 4**
-
-![Wazuh failed logon detection](screenshots/failed-logons/04-wazuh-failed-logon.png)
-
-**Use screenshot:** Wazuh event showing failed authentication from `172.16.0.100`
+<img width="1728" height="1117" alt="Wazuh Failed Login Alert" src="https://github.com/user-attachments/assets/9b6765b3-6344-4462-8812-66be0f67ba29" />
+<img width="1728" height="1117" alt="Wazuh Detailed Failed Login" src="https://github.com/user-attachments/assets/8a690a89-8c53-4ec8-9523-62bd024640e5" />
 
 ### Analyst Notes
 
@@ -226,7 +195,7 @@ Failed authentication attempts were generated from the Windows 11 client. The Do
 
 ---
 
-## 12.3 Detection Three: Suspicious PowerShell Activity
+## 1.3 Detection Three: Suspicious PowerShell Activity
 
 ### Objective
 
@@ -273,7 +242,7 @@ powershell -ExecutionPolicy Bypass -Command "Get-Process"
 
 **Screenshot placement: 12.3 Screenshot 1**
 
-![PowerShell commands](screenshots/powershell/01-powershell-commands.png)
+<img width="1728" height="1117" alt="Powershell commands" src="https://github.com/user-attachments/assets/e365cc07-a841-45ae-bace-42eb522f2e7f" />
 
 **Use screenshot:** PowerShell ISE showing enumeration commands and ExecutionPolicy Bypass command
 
