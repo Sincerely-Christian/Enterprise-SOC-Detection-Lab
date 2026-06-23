@@ -107,8 +107,8 @@ nmap -sV -Pn 172.16.0.100
 #### Kali scan against Domain Controller
 
 **Screenshot placement: 12.1 Screenshot 1**
+<img width="1728" height="1117" alt="DC Nmap Scan" src="https://github.com/user-attachments/assets/63f2dd26-80dd-47c8-ad45-e0925d27cc2c" />
 
-![Kali Nmap scan against Domain Controller](screenshots/nmap/01-kali-nmap-dc.png)
 
 **Use screenshot:** Kali terminal showing `nmap -sV -Pn 172.16.0.1`
 
