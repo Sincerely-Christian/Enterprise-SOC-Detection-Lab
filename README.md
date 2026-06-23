@@ -447,7 +447,7 @@ Greenbone identified exposed Windows services, timestamp disclosure issues, SSH 
 
 ---
 
-# Phase 4 - Security Hardening and Remediation
+# Phase 3 - Security Hardening and Remediation
 
 ## Objective
 
@@ -455,7 +455,7 @@ Implement security controls and document remediation actions based on Greenbone/
 
 ---
 
-## 4.1 Group Policy Verification
+## 3.1 Group Policy Verification
 
 The Domain Controller was configured with multiple SOC-focused Group Policy Objects.
 
@@ -477,7 +477,7 @@ The Domain Controller was configured with multiple SOC-focused Group Policy Obje
 
 ---
 
-## 4.2 Audit Policy Validation
+## 3.2 Audit Policy Validation
 
 Advanced audit policy settings were verified.
 
@@ -495,7 +495,7 @@ auditpol /get /category:* | findstr "Success and Failure"
 
 ---
 
-## 4.3 Firewall Enabled
+## 3.3 Firewall Enabled
 
 Windows Defender Firewall was confirmed enabled for Domain, Private, and Public profiles.
 
@@ -507,7 +507,7 @@ Windows Defender Firewall was confirmed enabled for Domain, Private, and Public 
 
 ---
 
-## 4.4 ICMP Timestamp Mitigation
+## 3.4 ICMP Timestamp Mitigation
 
 ICMP timestamp requests were blocked through Windows Defender Firewall with Advanced Security.
 
@@ -528,7 +528,7 @@ Profiles: Domain, Private, Public
 
 ---
 
-## 4.5 Windows TCP Timestamp Mitigation
+## 3.5 Windows TCP Timestamp Mitigation
 
 TCP timestamps were disabled on Windows through the registry.
 
@@ -552,7 +552,7 @@ Tcp1323Opts = 0
 
 ---
 
-## 4.6 Linux TCP Timestamp Mitigation
+## 3.6 Linux TCP Timestamp Mitigation
 
 TCP timestamps were disabled on the Ubuntu Wazuh/OpenVAS server.
 
@@ -576,7 +576,7 @@ net.ipv4.tcp_timestamps = 0
 
 ---
 
-## 4.7 SSH MAC Hardening
+## 3.7 SSH MAC Hardening
 
 Weak SSH MAC algorithms were removed from the Ubuntu server configuration.
 
@@ -600,7 +600,7 @@ macs hmac-sha2-512,hmac-sha2-256
 
 ---
 
-## 4.8 Wazuh Enrollment Service Review
+## 3.8 Wazuh Enrollment Service Review
 
 Greenbone identified Wazuh `ossec-authd` on TCP 1515 as a high-severity issue.
 
@@ -658,7 +658,7 @@ Then restart Wazuh and verify port 1515 is no longer listening.
 
 ---
 
-## 4.9 Secure Cookie Finding
+## 3.9 Secure Cookie Finding
 
 Greenbone identified:
 
