@@ -31,7 +31,7 @@ The project includes:
 
 | Service           | URL                       |
 | ----------------- | ------------------------- |
-| Wazuh Dashboard   | https://172.16.0.101      |
+| Wazuh Dashboard   | https://172.16.0.101:443      |
 | Greenbone/OpenVAS | https://172.16.0.101:8443 |
 
 ---
