@@ -1,401 +1,898 @@
-# Enterprise SOC Home Lab
+# Active Directory SOC Detection & Vulnerability Management Lab
 
-## Overview
+## Project Overview
 
-This project expands upon my Active Directory Home Lab by introducing enterprise security monitoring, vulnerability management, system hardening, and detection engineering.
+This lab expands my original Active Directory home lab into a full SOC-style detection and vulnerability management environment.
 
-The environment simulates a small Security Operations Center (SOC) where Windows and Linux systems are monitored through Wazuh SIEM, audited through Sysmon and Windows Event Logging, scanned using OpenVAS, and hardened through Group Policy and host-based security controls.
+The project includes:
 
----
-
-## Objectives
-
-- Build and manage an Active Directory environment
-- Centralize log collection using Wazuh
-- Deploy Sysmon for advanced telemetry
-- Detect persistence techniques
-- Monitor authentication activity
-- Perform vulnerability assessments
-- Remediate discovered vulnerabilities
-- Implement security hardening controls
-- Document accepted risk decisions
+* Active Directory Domain Services
+* Windows 11 domain client monitoring
+* Wazuh SIEM log collection
+* Sysmon endpoint telemetry
+* PowerShell logging
+* Kali Linux detection testing
+* Greenbone/OpenVAS vulnerability scanning
+* Group Policy security hardening
+* Vulnerability remediation and risk acceptance documentation
 
 ---
 
-## Lab Architecture
+## Lab Network
 
-### Infrastructure
-<img width="1536" height="1024" alt="SOC HomeLab" src="https://github.com/user-attachments/assets/aa3236d2-65d4-4a4e-93cd-9e29dcd2f8b8" />
+| Role                        | System                    | IP Address   |
+| --------------------------- | ------------------------- | ------------ |
+| Domain Controller / Gateway | Windows Server 2025       | 172.16.0.1   |
+| Windows Client              | Windows 11                | 172.16.0.100 |
+| Ubuntu Security Server      | Wazuh + Greenbone/OpenVAS | 172.16.0.101 |
+| Kali Linux                  | Scanner / Test Host       | 172.16.0.102 |
 
-| System | Role |
-|----------|----------|
-| Windows Server 2025 | Domain Controller |
-| Windows 11 | Domain Joined Client |
-| Ubuntu Server | Wazuh SIEM + OpenVAS |
-| Kali Linux | Attack / Assessment Platform |
+### Web Consoles
 
-### Security Stack
-
-- Active Directory
-- Group Policy
-- Sysmon
-- Wazuh
-- OpenVAS
-- Windows Defender Firewall
-- Advanced Audit Policy
-- SSH Hardening
+| Service           | URL                       |
+| ----------------- | ------------------------- |
+| Wazuh Dashboard   | https://172.16.0.101      |
+| Greenbone/OpenVAS | https://172.16.0.101:8443 |
 
 ---
 
-# Phase 1 – Persistence Detection with Wazuh
+## Tools Used
 
-## Objective
-
-Demonstrate Wazuh's ability to detect suspicious Windows service creation activity commonly associated with persistence techniques.
+* Windows Server 2025
+* Windows 11
+* Active Directory
+* DNS
+* DHCP
+* Group Policy
+* Sysmon
+* Wazuh SIEM
+* Greenbone/OpenVAS
+* Kali Linux
+* Nmap
+* PowerShell
+* Windows Event Viewer
+* Windows Defender Firewall
+* Ubuntu Server
 
 ---
 
-### Create Suspicious Service
+# Phase 12 - Detection Engineering
 
-The following command was executed on the Windows client:
+Phase 12 generated controlled security events and verified that the lab could detect them through Windows logs, Sysmon, and Wazuh.
+
+---
+
+## 12.1 Detection One: Nmap Reconnaissance
+
+### Objective
+
+Simulate network reconnaissance from Kali Linux against internal Windows systems and detect the activity through Sysmon and Wazuh.
+
+### Source
+
+| System     | IP           |
+| ---------- | ------------ |
+| Kali Linux | 172.16.0.102 |
+
+### Targets
+
+| System            | IP           |
+| ----------------- | ------------ |
+| Domain Controller | 172.16.0.1   |
+| Windows 11 Client | 172.16.0.100 |
+
+### Commands Used
+
+```bash
+nmap -sV -Pn 172.16.0.1
+nmap -sV -Pn 172.16.0.100
+```
+
+### Expected Detection Sources
+
+| Source | Event                                 |
+| ------ | ------------------------------------- |
+| Sysmon | Event ID 3 - Network Connection       |
+| Wazuh  | Events showing source IP 172.16.0.102 |
+| Kali   | Nmap scan output                      |
+
+### MITRE ATT&CK Mapping
+
+| Tactic    | Technique                 | ID    |
+| --------- | ------------------------- | ----- |
+| Discovery | Network Service Discovery | T1046 |
+
+### Evidence
+
+#### Kali scan against Domain Controller
+
+**Screenshot placement: 12.1 Screenshot 1**
+
+![Kali Nmap scan against Domain Controller](screenshots/nmap/01-kali-nmap-dc.png)
+
+**Use screenshot:** Kali terminal showing `nmap -sV -Pn 172.16.0.1`
+
+#### Sysmon network connection event
+
+**Screenshot placement: 12.1 Screenshot 2**
+
+![Sysmon Event ID 3 network connection](screenshots/nmap/03-dc-sysmon-event3.png)
+
+**Use screenshot:** Event Viewer showing Sysmon Event ID 3 with source IP `172.16.0.102`
+
+#### Wazuh detection of Kali source IP
+
+**Screenshot placement: 12.1 Screenshot 3**
+
+![Wazuh detection of Kali source IP](screenshots/nmap/05-wazuh-kali-source-ip.png)
+
+**Use screenshot:** Wazuh Discover search showing `data.win.eventdata.sourceIp:172.16.0.102`
+
+#### Kali scan against Windows 11 Client
+
+**Screenshot placement: 12.1 Screenshot 4**
+
+![Kali Nmap scan against Windows 11 Client](screenshots/nmap/02-kali-nmap-win11.png)
+
+**Use screenshot:** Kali terminal showing `nmap -sV -Pn 172.16.0.100`
+
+### Analyst Notes
+
+The Kali system performed service discovery against internal hosts. The activity was visible through Sysmon Event ID 3 and was ingested into Wazuh, proving that network reconnaissance can be detected in the lab.
+
+---
+
+## 12.2 Detection Two: Failed Domain Logons
+
+### Objective
+
+Generate failed domain authentication attempts from the Windows 11 client and verify that the Domain Controller and Wazuh captured the activity.
+
+### Source
+
+| System            | IP           |
+| ----------------- | ------------ |
+| Windows 11 Client | 172.16.0.100 |
+
+### Target
+
+| System            | IP         |
+| ----------------- | ---------- |
+| Domain Controller | 172.16.0.1 |
+
+### Commands Used
+
+```cmd
+hostname
+whoami
+ipconfig
+
+runas /user:mydomain\fakeuser cmd
+runas /user:mydomain\Admin-C-James cmd
+```
+
+### Expected Event IDs
+
+| Event ID | Description                           |
+| -------- | ------------------------------------- |
+| 4625     | Failed logon                          |
+| 4771     | Kerberos pre-authentication failed    |
+| 4776     | NTLM authentication                   |
+| 4740     | Account lockout, if threshold reached |
+
+### MITRE ATT&CK Mapping
+
+| Tactic            | Technique   | ID    |
+| ----------------- | ----------- | ----- |
+| Credential Access | Brute Force | T1110 |
+
+### Evidence
+
+#### Windows client context
+
+**Screenshot placement: 12.2 Screenshot 1**
+
+![Windows 11 hostname whoami ipconfig](screenshots/failed-logons/01-win11-context.png)
+
+**Use screenshot:** PowerShell showing `hostname`, `whoami`, and `ipconfig`
+
+#### Failed runas attempts
+
+**Screenshot placement: 12.2 Screenshot 2**
+
+![Failed runas attempts](screenshots/failed-logons/02-runas-failed-attempts.png)
+
+**Use screenshot:** Command line showing repeated failed `runas` attempts
+
+#### Domain Controller authentication failure
+
+**Screenshot placement: 12.2 Screenshot 3**
+
+![Domain Controller Event 4771](screenshots/failed-logons/03-dc-eventviewer-4771.png)
+
+**Use screenshot:** Event Viewer showing Kerberos pre-authentication failure Event ID 4771
+
+#### Wazuh failed authentication event
+
+**Screenshot placement: 12.2 Screenshot 4**
+
+![Wazuh failed logon detection](screenshots/failed-logons/04-wazuh-failed-logon.png)
+
+**Use screenshot:** Wazuh event showing failed authentication from `172.16.0.100`
+
+### Analyst Notes
+
+Failed authentication attempts were generated from the Windows 11 client. The Domain Controller recorded Kerberos authentication failures, and Wazuh collected the related events. This confirms that the lab can detect failed domain logon activity.
+
+---
+
+## 12.3 Detection Three: Suspicious PowerShell Activity
+
+### Objective
+
+Generate suspicious PowerShell telemetry and confirm detection through PowerShell Operational logs, Sysmon, and Wazuh.
+
+### Source
+
+| System            | IP           |
+| ----------------- | ------------ |
+| Windows 11 Client | 172.16.0.100 |
+
+### Commands Used
+
+```powershell
+whoami
+hostname
+Get-LocalUser
+Get-Process
+Get-Service
+Get-NetIPAddress
+Get-LocalGroupMember Administrators
+
+powershell -ExecutionPolicy Bypass -Command "Get-Process"
+```
+
+### Expected Event IDs
+
+| Event ID | Source     | Description          |
+| -------- | ---------- | -------------------- |
+| 4103     | PowerShell | Module logging       |
+| 4104     | PowerShell | Script block logging |
+| 4688     | Security   | Process creation     |
+| 1        | Sysmon     | Process creation     |
+
+### MITRE ATT&CK Mapping
+
+| Tactic    | Technique  | ID        |
+| --------- | ---------- | --------- |
+| Execution | PowerShell | T1059.001 |
+
+### Evidence
+
+#### PowerShell commands executed
+
+**Screenshot placement: 12.3 Screenshot 1**
+
+![PowerShell commands](screenshots/powershell/01-powershell-commands.png)
+
+**Use screenshot:** PowerShell ISE showing enumeration commands and ExecutionPolicy Bypass command
+
+#### PowerShell Event ID 4104
+
+**Screenshot placement: 12.3 Screenshot 2**
+
+![PowerShell Event 4104](screenshots/powershell/02-eventviewer-4104.png)
+
+**Use screenshot:** Event Viewer showing PowerShell script block logging
+
+#### Sysmon process creation
+
+**Screenshot placement: 12.3 Screenshot 3**
+
+![Sysmon PowerShell process creation](screenshots/powershell/03-sysmon-event1-powershell.png)
+
+**Use screenshot:** Sysmon Event ID 1 showing PowerShell process creation
+
+#### Wazuh PowerShell event
+
+**Screenshot placement: 12.3 Screenshot 4**
+
+![Wazuh PowerShell detection](screenshots/powershell/04-wazuh-powershell-events.png)
+
+**Use screenshot:** Wazuh Discover showing PowerShell Operational event and ScriptBlockText
+
+#### Wazuh expanded PowerShell document
+
+**Screenshot placement: 12.3 Screenshot 5**
+
+![Wazuh expanded PowerShell document](screenshots/powershell/05-wazuh-powershell-expanded-document.png)
+
+**Use screenshot:** Wazuh single document view showing ScriptBlockText and PowerShell Operational details
+
+### Analyst Notes
+
+PowerShell enumeration and an ExecutionPolicy Bypass command were generated on the Windows 11 client. The activity appeared in PowerShell Operational logs, Sysmon, and Wazuh.
+
+---
+
+## 12.4 Detection Four: Windows Service Creation
+
+### Objective
+
+Create a harmless Windows service to simulate persistence-style behavior and detect it through Windows Event Logs and Wazuh.
+
+### Source
+
+| System            | IP           |
+| ----------------- | ------------ |
+| Windows 11 Client | 172.16.0.100 |
+
+### Commands Used
 
 ```cmd
 sc create LabTestService binPath= "cmd.exe /c whoami > C:\Windows\Temp\labtest.txt"
+sc start LabTestService
+sc query LabTestService
+type C:\Windows\Temp\labtest.txt
+sc delete LabTestService
 ```
 
-### Screenshot
+### Expected Event IDs
 
-**Insert Screenshot:**
-<img width="1728" height="1117" alt="Service Creation Commands" src="https://github.com/user-attachments/assets/53ccfb71-c375-400f-8181-e15d239c8386" />
+| Event ID | Source   | Description                    |
+| -------- | -------- | ------------------------------ |
+| 7045     | System   | Service installed              |
+| 4688     | Security | Process creation               |
+| 1        | Sysmon   | Process creation               |
+| 12/13    | Sysmon   | Registry object/value activity |
 
-Command prompt showing service creation
+### MITRE ATT&CK Mapping
 
----
+| Tactic      | Technique                                        | ID        |
+| ----------- | ------------------------------------------------ | --------- |
+| Persistence | Create or Modify System Process: Windows Service | T1543.003 |
 
-### Windows Event Viewer Detection
+### Evidence
 
-Event ID 7045 was generated.
+#### Service creation command
 
-This event indicates:
+**Screenshot placement: 12.4 Screenshot 1**
 
-- New service installed
-- Service account used
-- Service executable path
-- Service startup type
+![Service creation command](screenshots/service-creation/01-service-creation-command.png)
 
-### Screenshot
+**Use screenshot:** Administrator Command Prompt showing `sc create`, `sc start`, `sc query`, `type`, and `sc delete`
 
-**Insert Screenshot:**
-<img width="1728" height="1117" alt="Service Creation Event Viewer" src="https://github.com/user-attachments/assets/71eb6280-c547-485a-83de-cc943af664f7" />
+#### Event Viewer 7045
 
-Event Viewer showing Event ID 7045
+**Screenshot placement: 12.4 Screenshot 2**
 
----
+![Event Viewer 7045](screenshots/service-creation/02-eventviewer-7045.png)
 
-### Wazuh Detection
+**Use screenshot:** Event Viewer showing `LabTestService` Event ID 7045
 
-Wazuh successfully ingested and parsed the event.
+#### Wazuh service creation detection
 
-Alert fields included:
+**Screenshot placement: 12.4 Screenshot 3**
 
-- Service Name
-- Service Path
-- Service Account
-- Host Information
+![Wazuh LabTestService detection](screenshots/service-creation/04-wazuh-service-creation.png)
 
-### Screenshot
+**Use screenshot:** Wazuh Discover showing `LabTestService`
 
-**Insert Screenshot:**
-<img width="1728" height="1117" alt="Wazuh Service Creation Alert" src="https://github.com/user-attachments/assets/5838b59d-345d-4f4e-bf23-6c87bb968c6b" />
+#### Wazuh single document view
 
-Wazuh Discover view showing LabTestService alert
+**Screenshot placement: 12.4 Screenshot 4**
 
-<img width="1728" height="1117" alt="Wazuh Service Creation Detailed" src="https://github.com/user-attachments/assets/5f8cf660-e49b-492a-abd8-0b59a84cf837" />
+![Wazuh service creation details](screenshots/service-creation/05-wazuh-service-creation-details.png)
 
-Detailed view of alert
+**Use screenshot:** Wazuh expanded document showing Service Control Manager details
 
----
+### Analyst Notes
 
-### Skills Demonstrated
-
-- Persistence Detection
-- Event ID 7045 Analysis
-- Windows Event Logging
-- Wazuh Event Correlation
-- Threat Hunting
+The `LabTestService` service was created, started, queried, and deleted. This generated Windows Event ID 7045 and was ingested into Wazuh. This demonstrates visibility into a common persistence technique.
 
 ---
 
-# Phase 13 – Vulnerability Assessment with OpenVAS
+# Phase 13 - Vulnerability Management with Greenbone/OpenVAS
 
 ## Objective
 
-Perform authenticated vulnerability scans against all lab assets.
+Perform vulnerability scans against lab systems using Greenbone/OpenVAS and document findings by host.
+
+### Scanned Hosts
+
+| Host                        | IP           |
+| --------------------------- | ------------ |
+| Domain Controller           | 172.16.0.1   |
+| Windows 11 Client           | 172.16.0.100 |
+| Ubuntu Wazuh/OpenVAS Server | 172.16.0.101 |
 
 ---
 
-### OpenVAS Deployment
+## Greenbone/OpenVAS Access
 
-OpenVAS was deployed on the Ubuntu Security Server.
+Greenbone/OpenVAS was accessed through the Ubuntu Security Server.
 
-### Screenshot
+```text
+https://172.16.0.101:8443
+```
 
-**Insert Screenshot:**
-`phase13-openvas-dashboard.png`
+### Evidence
 
-(OpenVAS login page)
+#### Greenbone/OpenVAS login page
+
+**Screenshot placement: Phase 13 Screenshot 1**
+
+![Greenbone login](screenshots/greenbone/01-greenbone-login.png)
+
+**Use screenshot:** OpenVAS login page
 
 ---
 
-## Windows 11 Vulnerability Scan
+## Scan Tasks Completed
 
-### Findings
+Four scan tasks were visible in Greenbone/OpenVAS.
 
-- DCE/RPC Enumeration
-- TCP Timestamp Disclosure
+### Evidence
 
-### Screenshot
+#### Completed Greenbone scan tasks
 
-**Insert Screenshot:**
-`phase13-windows11-scan.png`
+**Screenshot placement: Phase 13 Screenshot 2**
 
-(OpenVAS report for Windows 11)
+![Greenbone scan tasks](screenshots/greenbone/02-greenbone-tasks.png)
+
+**Use screenshot:** Greenbone Tasks page showing completed scans
 
 ---
 
 ## Domain Controller Scan
 
-### Findings
+### Host
 
-- DCE/RPC Enumeration
-- TCP Timestamp Disclosure
-
-### Screenshot
-
-**Insert Screenshot:**
-`phase13-dc-scan.png`
-
-(OpenVAS report for Domain Controller)
-
----
-
-## Ubuntu Security Server Scan
+```text
+172.16.0.1
+```
 
 ### Findings
 
-- Wazuh Authd Exposure
-- Weak SSH MAC Algorithms
-- Missing Secure Cookie Attribute
-- TCP Timestamp Disclosure
-- ICMP Timestamp Disclosure
+| Finding                                          | Severity |
+| ------------------------------------------------ | -------- |
+| DCE/RPC and MSRPC Services Enumeration Reporting | Medium   |
+| TCP Timestamps Information Disclosure            | Low      |
 
-### Screenshot
+### Evidence
 
-**Insert Screenshot:**
-`phase13-wazuh-server-scan.png`
+#### Domain Controller OpenVAS results
 
-(OpenVAS report showing High Severity findings)
+**Screenshot placement: Phase 13 Screenshot 3**
 
----
+![Domain Controller OpenVAS scan](screenshots/greenbone/03-dc-scan-results.png)
 
-### Skills Demonstrated
-
-- Vulnerability Assessment
-- OpenVAS Administration
-- Network Enumeration
-- Security Analysis
-- Risk Prioritization
+**Use screenshot:** OpenVAS report for `172.16.0.1`
 
 ---
 
-# Phase 14 – Vulnerability Remediation and Hardening
+## Windows 11 Client Scan
+
+### Host
+
+```text
+172.16.0.100
+```
+
+### Findings
+
+| Finding                                          | Severity |
+| ------------------------------------------------ | -------- |
+| DCE/RPC and MSRPC Services Enumeration Reporting | Medium   |
+| TCP Timestamps Information Disclosure            | Low      |
+
+### Evidence
+
+#### Windows 11 OpenVAS results
+
+**Screenshot placement: Phase 13 Screenshot 4**
+
+![Windows 11 OpenVAS scan](screenshots/greenbone/04-win11-scan-results.png)
+
+**Use screenshot:** OpenVAS report for `172.16.0.100`
+
+---
+
+## Ubuntu Wazuh/OpenVAS Server Scan
+
+### Host
+
+```text
+172.16.0.101
+```
+
+### Findings
+
+| Finding                                      | Severity |
+| -------------------------------------------- | -------- |
+| Unprotected OSSEC/Wazuh ossec-authd Protocol | High     |
+| Missing Secure Cookie Attribute              | Medium   |
+| TCP Timestamps Information Disclosure        | Low      |
+| Weak SSH MAC Algorithms                      | Low      |
+| ICMP Timestamp Reply Information Disclosure  | Low      |
+
+### Evidence
+
+#### Ubuntu Wazuh/OpenVAS server results
+
+**Screenshot placement: Phase 13 Screenshot 5**
+
+![Ubuntu Wazuh OpenVAS scan](screenshots/greenbone/05-wazuh-server-scan-results.png)
+
+**Use screenshot:** OpenVAS report showing Wazuh server findings
+
+### Analyst Notes
+
+Greenbone identified exposed Windows services, timestamp disclosure issues, SSH configuration weaknesses, Wazuh enrollment exposure, and an application-level secure cookie finding. These findings were reviewed and used to guide Phase 14 hardening.
+
+---
+
+# Phase 14 - Security Hardening and Remediation
 
 ## Objective
 
-Remediate identified vulnerabilities and validate security controls.
+Implement security controls and document remediation actions based on Greenbone/OpenVAS findings.
 
 ---
 
-## Security Baseline Verification
+## 14.1 Group Policy Verification
 
-### Applied Security Policies
+The Domain Controller was configured with multiple SOC-focused Group Policy Objects.
 
-- Advanced Audit Policy
-- Password Lockout Policy
-- SMBv1 Disabled
-- Windows Defender Baseline
-- PowerShell Logging
-- Firewall Enforcement
+### Applied GPOs
 
-### Screenshot
+* SOC - Advanced Audit Policy
+* SOC - Password and Lockout Policy
+* SOC - Disable SMBv1
+* SOC - Firewall Enabled
+* SOC - PowerShell Logging
+* SOC - Screen Lock Policy
+* SOC - Windows Defender Baseline
 
-**Insert Screenshot:**
-`phase14-gpo-verification.png`
+### Evidence
 
-(Applied GPOs)
+#### Applied SOC Group Policy Objects
 
----
+**Screenshot placement: Phase 14 Screenshot 1**
 
-## Audit Policy Validation
+![Applied GPOs](screenshots/gpo/01-applied-gpos.png)
 
-Advanced auditing was confirmed through auditpol.
-
-### Screenshot
-
-**Insert Screenshot:**
-`phase14-audit-policy.png`
-
-(Auditpol Success and Failure auditing)
+**Use screenshot:** `gpresult /scope computer /r` showing applied SOC GPOs
 
 ---
 
-## Wazuh Authd Security Review
+## 14.2 Audit Policy Validation
 
-OpenVAS identified the authd service.
+Advanced audit policy settings were verified.
 
-Port verification confirmed:
+### Command Used
+
+```powershell
+auditpol /get /category:* | findstr "Success and Failure"
+```
+
+### Evidence
+
+#### Advanced audit policy validation
+
+**Screenshot placement: Phase 14 Screenshot 2**
+
+![Audit policy validation](screenshots/gpo/02-auditpol-results.png)
+
+**Use screenshot:** PowerShell showing audit categories set to Success and Failure
+
+---
+
+## 14.3 Firewall Enabled
+
+Windows Defender Firewall was confirmed enabled for Domain, Private, and Public profiles.
+
+### Evidence
+
+#### Windows Defender Firewall enabled
+
+**Screenshot placement: Phase 14 Screenshot 3**
+
+![Windows Defender Firewall enabled](screenshots/gpo/03-firewall-enabled.png)
+
+**Use screenshot:** Group Policy Management Editor showing firewall enabled
+
+---
+
+## 14.4 ICMP Timestamp Mitigation
+
+ICMP timestamp requests were blocked through Windows Defender Firewall with Advanced Security.
+
+### Control
+
+```text
+Block ICMP Timestamp Requests
+Protocol: ICMPv4
+Action: Block
+Profiles: Domain, Private, Public
+```
+
+### Evidence
+
+#### ICMP timestamp firewall block rule
+
+**Screenshot placement: Phase 14 Screenshot 4**
+
+![ICMP timestamp firewall rule](screenshots/hardening/01-icmp-timestamp-blocked.png)
+
+**Use screenshot:** GPO inbound rule named `Block ICMP Timestamp Requests`
+
+---
+
+## 14.5 Windows TCP Timestamp Mitigation
+
+TCP timestamps were disabled on Windows through the registry.
+
+### Registry Path
+
+```text
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
+```
+
+### Value
+
+```text
+Tcp1323Opts = 0
+```
+
+### Evidence
+
+#### Windows TCP timestamps disabled in registry
+
+**Screenshot placement: Phase 14 Screenshot 5**
+
+![Windows TCP timestamps disabled](screenshots/hardening/02-windows-tcp-timestamps-disabled.png)
+
+**Use screenshot:** Registry Editor showing `Tcp1323Opts` set to `0`
+
+---
+
+## 14.6 Linux TCP Timestamp Mitigation
+
+TCP timestamps were disabled on the Ubuntu Wazuh/OpenVAS server.
+
+### Command Used
+
+```bash
+sysctl net.ipv4.tcp_timestamps
+```
+
+### Expected Result
+
+```bash
+net.ipv4.tcp_timestamps = 0
+```
+
+### Evidence
+
+#### Linux TCP timestamps disabled
+
+**Screenshot placement: Phase 14 Screenshot 6**
+
+![Linux TCP timestamps disabled](screenshots/hardening/03-linux-tcp-timestamps-disabled.png)
+
+**Use screenshot:** Ubuntu terminal showing `net.ipv4.tcp_timestamps = 0`
+
+---
+
+## 14.7 SSH MAC Hardening
+
+Weak SSH MAC algorithms were removed from the Ubuntu server configuration.
+
+### Verification Command
+
+```bash
+sudo sshd -T | grep macs
+```
+
+### Expected Result
+
+```bash
+macs hmac-sha2-512,hmac-sha2-256
+```
+
+### Evidence
+
+#### SSH MAC hardening verification
+
+**Screenshot placement: Phase 14 Screenshot 7**
+
+![SSH MAC hardening](screenshots/hardening/04-ssh-macs-hardened.png)
+
+**Use screenshot:** Ubuntu terminal showing hardened SSH MAC list
+
+---
+
+## 14.8 Wazuh Enrollment Service Review
+
+Greenbone identified Wazuh `ossec-authd` on TCP 1515 as a high-severity issue.
+
+### Verification Command
 
 ```bash
 sudo ss -tulpn | grep 1515
 ```
 
-### Screenshot
+### Evidence
 
-**Insert Screenshot:**
-`phase14-authd-port.png`
+#### Wazuh authd listening on TCP 1515
 
-(Authd Listening)
+**Screenshot placement: Phase 14 Screenshot 8**
 
----
+![Wazuh authd listening](screenshots/hardening/05-wazuh-authd-listening.png)
 
-Password authentication was verified.
+**Use screenshot:** Ubuntu terminal showing TCP 1515 listening
 
-### Screenshot
+### Configuration Reviewed
 
-**Insert Screenshot:**
-`phase14-authd-password.png`
+The Wazuh configuration was reviewed to confirm enrollment authentication.
 
-(authd Password Enabled)
+### Evidence
 
----
+#### Wazuh authd password configuration
 
-## ICMP Timestamp Mitigation
+**Screenshot placement: Phase 14 Screenshot 9**
 
-Firewall rules were deployed through Group Policy.
+![Wazuh authd configuration](screenshots/hardening/06-wazuh-authd-password-enabled.png)
 
-### Screenshot
+**Use screenshot:** `ossec.conf` showing `<use_password>yes</use_password>`
 
-**Insert Screenshot:**
-`phase14-firewall-rule.png`
+### Risk Decision
 
-(ICMP Timestamp Blocked by Firewall)
+The service was not fully disabled because future agent enrollment may still be needed in the lab. Instead, authentication was verified and the finding was documented as requiring future hardening.
 
----
+### Residual Risk
 
-## Windows TCP Timestamp Mitigation
+Low to Medium, depending on whether enrollment remains exposed after lab completion.
 
-Registry hardening disabled TCP timestamps.
+### Future Remediation
 
-### Screenshot
+When no more Wazuh agents need to be enrolled:
 
-**Insert Screenshot:**
-`phase14-windows-timestamps.png`
+```bash
+sudo nano /var/ossec/etc/ossec.conf
+```
 
-(Registry showing Tcp1323Opts = 0)
+Change:
 
----
+```xml
+<disabled>no</disabled>
+```
 
-## Linux TCP Timestamp Mitigation
+to:
 
-Linux timestamps were disabled.
+```xml
+<disabled>yes</disabled>
+```
 
-### Screenshot
-
-**Insert Screenshot:**
-`phase14-linux-timestamps.png`
-
-(sysctl net.ipv4.tcp_timestamps = 0)
+Then restart Wazuh and verify port 1515 is no longer listening.
 
 ---
 
-## SSH Hardening
+## 14.9 Secure Cookie Finding
 
-Weak MAC algorithms were removed.
+Greenbone identified:
 
-### Screenshot
+```text
+Missing 'Secure' Cookie Attribute
+```
 
-**Insert Screenshot:**
-`phase14-ssh-macs.png`
+This finding originated from the Wazuh Dashboard web application.
 
-(SSH MAC verification)
+### Risk Decision
 
----
+This was documented as an accepted risk because modifying Wazuh dashboard cookie behavior could affect dashboard functionality and was outside the intended scope of this lab.
 
-## Accepted Risk Documentation
+### Evidence
 
-The Missing Secure Cookie Attribute finding was reviewed and accepted as a documented risk.
+#### Secure cookie accepted risk note
 
-### Screenshot
+**Screenshot placement: Phase 14 Screenshot 10**
 
-**Insert Screenshot:**
-`phase14-secure-cookie-risk.png`
+![Secure cookie accepted risk](screenshots/hardening/07-secure-cookie-accepted-risk.png)
 
-(Risk Acceptance Documentation)
-
----
-
-## Firewall Validation
-
-Firewall enforcement was verified through Group Policy.
-
-### Screenshot
-
-**Insert Screenshot:**
-`phase14-firewall-enabled.png`
-
-(Windows Defender Firewall Enabled)
+**Use screenshot:** Notepad documenting accepted risk for Missing Secure Cookie Attribute
 
 ---
 
 # Remediation Summary
 
-| Finding | Severity | Status |
-|----------|----------|----------|
-| Wazuh Authd Exposure | High | Mitigated |
-| ICMP Timestamp Disclosure | Low | Remediated |
-| TCP Timestamp Disclosure (Windows) | Low | Remediated |
-| TCP Timestamp Disclosure (Linux) | Low | Remediated |
-| Weak SSH MAC Algorithms | Low | Remediated |
-| Missing Secure Cookie Attribute | Medium | Accepted Risk |
+| Finding                                     | Host            | Severity | Action                                               |
+| ------------------------------------------- | --------------- | -------- | ---------------------------------------------------- |
+| TCP Timestamp Information Disclosure        | Windows hosts   | Low      | Registry hardening applied                           |
+| TCP Timestamp Information Disclosure        | Ubuntu server   | Low      | sysctl hardening applied                             |
+| ICMP Timestamp Reply Information Disclosure | Windows hosts   | Low      | Firewall rule applied                                |
+| Weak SSH MAC Algorithms                     | Ubuntu server   | Low      | SSH MACs restricted                                  |
+| Missing Secure Cookie Attribute             | Wazuh Dashboard | Medium   | Accepted risk                                        |
+| Wazuh ossec-authd Exposure                  | Ubuntu server   | High     | Authentication verified, future hardening documented |
+| DCE/RPC Enumeration                         | Windows hosts   | Medium   | Accepted as expected AD lab exposure                 |
 
 ---
 
-# Skills Demonstrated
+# Troubleshooting Notes
 
-- Active Directory Administration
-- Group Policy Management
-- Wazuh SIEM
-- Sysmon
-- Threat Detection
-- Event Analysis
-- OpenVAS
-- Vulnerability Management
-- Vulnerability Remediation
-- Windows Hardening
-- Linux Hardening
-- Firewall Management
-- Audit Policy Configuration
-- SSH Hardening
-- Risk Management
-- Security Operations
-- Threat Hunting
+## TCP Timestamp Troubleshooting
+
+TCP timestamps remained visible during early validation. Troubleshooting included:
+
+```bash
+sysctl net.ipv4.tcp_timestamps
+sudo sysctl --system
+sudo tcpdump -ni enp0s5 tcp
+```
+
+Observation:
+
+* Ubuntu host showed `net.ipv4.tcp_timestamps = 0`
+* Docker container traffic still showed timestamp-like TCP options in some captures
+* Greenbone findings may vary depending on whether it scans host, container, or bridged traffic
+
+## ICMP Timestamp Troubleshooting
+
+Firewall rules were reviewed in Group Policy to ensure ICMP timestamp requests were blocked.
+
+## Wazuh Authd Troubleshooting
+
+The following was used to confirm exposure:
+
+```bash
+sudo ss -tulpn | grep 1515
+```
+
+The service was still listening through Docker proxy, so the finding was documented rather than hidden.
 
 ---
 
-# Outcome
+# Key Skills Demonstrated
 
-This lab demonstrates the complete defensive security lifecycle:
+* Active Directory administration
+* Domain Controller management
+* Windows endpoint monitoring
+* Wazuh SIEM deployment
+* Sysmon telemetry collection
+* PowerShell logging
+* Detection engineering
+* Threat hunting
+* MITRE ATT&CK mapping
+* Nmap reconnaissance detection
+* Failed logon detection
+* PowerShell activity detection
+* Windows service creation detection
+* Vulnerability scanning with Greenbone/OpenVAS
+* Vulnerability remediation
+* Risk acceptance documentation
+* Group Policy hardening
+* Windows Firewall configuration
+* Linux sysctl hardening
+* SSH hardening
 
-Build → Monitor → Detect → Assess → Remediate → Validate
+---
 
-The project simulates enterprise security operations by combining Active Directory administration, SIEM monitoring, vulnerability management, and system hardening within a unified SOC environment.
+# Final Outcome
+
+This lab demonstrates a complete SOC workflow:
+
+```text
+Generate Activity
+Collect Logs
+Detect Events
+Investigate Alerts
+Scan for Vulnerabilities
+Prioritize Findings
+Apply Hardening
+Validate Remediation
+Document Risk
+```
+
+This project shows practical experience with both blue-team detection and vulnerability management in a realistic Active Directory lab environment.
+ 
