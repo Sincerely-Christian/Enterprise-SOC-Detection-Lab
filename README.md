@@ -266,7 +266,7 @@ PowerShell enumeration and an ExecutionPolicy Bypass command were generated on t
 
 ---
 
-## 12.4 Detection Four: Windows Service Creation
+## 1.4 Detection Four: Windows Service Creation
 
 ### Objective
 
@@ -327,7 +327,7 @@ The `LabTestService` service was created, started, queried, and deleted. This ge
 
 ---
 
-# Phase 13 - Vulnerability Management with Greenbone/OpenVAS
+# Phase 2 - Vulnerability Management with Greenbone/OpenVAS
 
 ## Objective
 
@@ -355,11 +355,7 @@ https://172.16.0.101:8443
 
 #### Greenbone/OpenVAS login page
 
-**Screenshot placement: Phase 13 Screenshot 1**
-
-![Greenbone login](screenshots/greenbone/01-greenbone-login.png)
-
-**Use screenshot:** OpenVAS login page
+<img width="1728" height="1117" alt="Wazuh Login:Url" src="https://github.com/user-attachments/assets/3e5f8da0-d710-4c85-adb9-c2abfbaf9d1e" />
 
 ---
 
@@ -371,11 +367,7 @@ Four scan tasks were visible in Greenbone/OpenVAS.
 
 #### Completed Greenbone scan tasks
 
-**Screenshot placement: Phase 13 Screenshot 2**
-
-![Greenbone scan tasks](screenshots/greenbone/02-greenbone-tasks.png)
-
-**Use screenshot:** Greenbone Tasks page showing completed scans
+<img width="1728" height="1117" alt="Wazuh Tasks all four complete Scans" src="https://github.com/user-attachments/assets/a30e2730-c92f-4826-98b1-2cbb92d21f06" />
 
 ---
 
@@ -398,11 +390,7 @@ Four scan tasks were visible in Greenbone/OpenVAS.
 
 #### Domain Controller OpenVAS results
 
-**Screenshot placement: Phase 13 Screenshot 3**
-
-![Domain Controller OpenVAS scan](screenshots/greenbone/03-dc-scan-results.png)
-
-**Use screenshot:** OpenVAS report for `172.16.0.1`
+<img width="1728" height="1117" alt="DC WinServer OpenVAS Results" src="https://github.com/user-attachments/assets/1123d134-f05b-4d50-baf5-3fc38b0c9848" />
 
 ---
 
@@ -425,11 +413,7 @@ Four scan tasks were visible in Greenbone/OpenVAS.
 
 #### Windows 11 OpenVAS results
 
-**Screenshot placement: Phase 13 Screenshot 4**
-
-![Windows 11 OpenVAS scan](screenshots/greenbone/04-win11-scan-results.png)
-
-**Use screenshot:** OpenVAS report for `172.16.0.100`
+<img width="1728" height="1117" alt="Windows 11 OpenVAS Results" src="https://github.com/user-attachments/assets/a980c1a1-f8cd-4ecb-8db2-102e0143cb07" />
 
 ---
 
@@ -455,11 +439,7 @@ Four scan tasks were visible in Greenbone/OpenVAS.
 
 #### Ubuntu Wazuh/OpenVAS server results
 
-**Screenshot placement: Phase 13 Screenshot 5**
-
-![Ubuntu Wazuh OpenVAS scan](screenshots/greenbone/05-wazuh-server-scan-results.png)
-
-**Use screenshot:** OpenVAS report showing Wazuh server findings
+<img width="1728" height="1117" alt="Ubuntu Server OpenVAS Results" src="https://github.com/user-attachments/assets/c7587acc-fcc2-4b8b-85e7-c2017868ad64" />
 
 ### Analyst Notes
 
