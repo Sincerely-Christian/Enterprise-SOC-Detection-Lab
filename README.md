@@ -244,39 +244,21 @@ powershell -ExecutionPolicy Bypass -Command "Get-Process"
 
 <img width="1728" height="1117" alt="Powershell commands" src="https://github.com/user-attachments/assets/e365cc07-a841-45ae-bace-42eb522f2e7f" />
 
-**Use screenshot:** PowerShell ISE showing enumeration commands and ExecutionPolicy Bypass command
-
 #### PowerShell Event ID 4104
 
-**Screenshot placement: 12.3 Screenshot 2**
-
-![PowerShell Event 4104](screenshots/powershell/02-eventviewer-4104.png)
-
-**Use screenshot:** Event Viewer showing PowerShell script block logging
+<img width="1728" height="1117" alt="Powershell event log 2" src="https://github.com/user-attachments/assets/ea072806-a0a7-4750-b350-d025b16361a4" />
 
 #### Sysmon process creation
 
-**Screenshot placement: 12.3 Screenshot 3**
-
-![Sysmon PowerShell process creation](screenshots/powershell/03-sysmon-event1-powershell.png)
-
-**Use screenshot:** Sysmon Event ID 1 showing PowerShell process creation
+<img width="1728" height="1117" alt="Powershell Sysmon Event" src="https://github.com/user-attachments/assets/1c6cab9f-9180-4cca-a941-2a3b92b618bd" />
 
 #### Wazuh PowerShell event
 
-**Screenshot placement: 12.3 Screenshot 4**
-
-![Wazuh PowerShell detection](screenshots/powershell/04-wazuh-powershell-events.png)
-
-**Use screenshot:** Wazuh Discover showing PowerShell Operational event and ScriptBlockText
+<img width="1728" height="1117" alt="Wazuh Powershell Alert" src="https://github.com/user-attachments/assets/0ba3fbd7-09b1-477d-b409-284dc541aeaa" />
 
 #### Wazuh expanded PowerShell document
 
-**Screenshot placement: 12.3 Screenshot 5**
-
-![Wazuh expanded PowerShell document](screenshots/powershell/05-wazuh-powershell-expanded-document.png)
-
-**Use screenshot:** Wazuh single document view showing ScriptBlockText and PowerShell Operational details
+<img width="1728" height="1117" alt="Wazuh Powershell Detailed Look" src="https://github.com/user-attachments/assets/ba2482d8-ea0b-4e48-994a-f139bf9f7a86" />
 
 ### Analyst Notes
 
@@ -325,35 +307,19 @@ sc delete LabTestService
 
 #### Service creation command
 
-**Screenshot placement: 12.4 Screenshot 1**
-
-![Service creation command](screenshots/service-creation/01-service-creation-command.png)
-
-**Use screenshot:** Administrator Command Prompt showing `sc create`, `sc start`, `sc query`, `type`, and `sc delete`
+<img width="1728" height="1117" alt="Service Creation Commands" src="https://github.com/user-attachments/assets/e2122bc2-95b5-4022-8832-5ce17452ec0e" />
 
 #### Event Viewer 7045
 
-**Screenshot placement: 12.4 Screenshot 2**
-
-![Event Viewer 7045](screenshots/service-creation/02-eventviewer-7045.png)
-
-**Use screenshot:** Event Viewer showing `LabTestService` Event ID 7045
+<img width="1728" height="1117" alt="Service Creation Event Viewer" src="https://github.com/user-attachments/assets/45cd6260-c8bf-42e0-b900-d504db5a70f0" />
 
 #### Wazuh service creation detection
 
-**Screenshot placement: 12.4 Screenshot 3**
-
-![Wazuh LabTestService detection](screenshots/service-creation/04-wazuh-service-creation.png)
-
-**Use screenshot:** Wazuh Discover showing `LabTestService`
+<img width="1728" height="1117" alt="Wazuh Service Creation Alert" src="https://github.com/user-attachments/assets/9cc3f010-ca51-493d-aa63-deca61dad81f" />
 
 #### Wazuh single document view
 
-**Screenshot placement: 12.4 Screenshot 4**
-
-![Wazuh service creation details](screenshots/service-creation/05-wazuh-service-creation-details.png)
-
-**Use screenshot:** Wazuh expanded document showing Service Control Manager details
+<img width="1728" height="1117" alt="Wazuh Service Creation Detailed" src="https://github.com/user-attachments/assets/f99b76b3-683a-4e78-9106-85c3f90af510" />
 
 ### Analyst Notes
 
