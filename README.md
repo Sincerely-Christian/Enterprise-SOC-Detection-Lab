@@ -447,7 +447,7 @@ Greenbone identified exposed Windows services, timestamp disclosure issues, SSH 
 
 ---
 
-# Phase 14 - Security Hardening and Remediation
+# Phase 4 - Security Hardening and Remediation
 
 ## Objective
 
@@ -455,7 +455,7 @@ Implement security controls and document remediation actions based on Greenbone/
 
 ---
 
-## 14.1 Group Policy Verification
+## 4.1 Group Policy Verification
 
 The Domain Controller was configured with multiple SOC-focused Group Policy Objects.
 
@@ -473,15 +473,11 @@ The Domain Controller was configured with multiple SOC-focused Group Policy Obje
 
 #### Applied SOC Group Policy Objects
 
-**Screenshot placement: Phase 14 Screenshot 1**
-
-![Applied GPOs](screenshots/gpo/01-applied-gpos.png)
-
-**Use screenshot:** `gpresult /scope computer /r` showing applied SOC GPOs
+<img width="1728" height="1117" alt="Applied GPOs" src="https://github.com/user-attachments/assets/9277d7f2-6ce3-4aef-a8b5-b9e2a6e97f06" />
 
 ---
 
-## 14.2 Audit Policy Validation
+## 4.2 Audit Policy Validation
 
 Advanced audit policy settings were verified.
 
@@ -495,15 +491,11 @@ auditpol /get /category:* | findstr "Success and Failure"
 
 #### Advanced audit policy validation
 
-**Screenshot placement: Phase 14 Screenshot 2**
-
-![Audit policy validation](screenshots/gpo/02-auditpol-results.png)
-
-**Use screenshot:** PowerShell showing audit categories set to Success and Failure
+<img width="1728" height="1117" alt="Auditpol Results" src="https://github.com/user-attachments/assets/59c803ee-e84b-4c96-9c6d-4fff17fcbcd0" />
 
 ---
 
-## 14.3 Firewall Enabled
+## 4.3 Firewall Enabled
 
 Windows Defender Firewall was confirmed enabled for Domain, Private, and Public profiles.
 
@@ -511,15 +503,11 @@ Windows Defender Firewall was confirmed enabled for Domain, Private, and Public 
 
 #### Windows Defender Firewall enabled
 
-**Screenshot placement: Phase 14 Screenshot 3**
-
-![Windows Defender Firewall enabled](screenshots/gpo/03-firewall-enabled.png)
-
-**Use screenshot:** Group Policy Management Editor showing firewall enabled
+<img width="1728" height="1117" alt="Authd Listening" src="https://github.com/user-attachments/assets/804afa2f-bb14-45a9-8f7e-7956b29d17a9" />
 
 ---
 
-## 14.4 ICMP Timestamp Mitigation
+## 4.4 ICMP Timestamp Mitigation
 
 ICMP timestamp requests were blocked through Windows Defender Firewall with Advanced Security.
 
@@ -536,15 +524,11 @@ Profiles: Domain, Private, Public
 
 #### ICMP timestamp firewall block rule
 
-**Screenshot placement: Phase 14 Screenshot 4**
-
-![ICMP timestamp firewall rule](screenshots/hardening/01-icmp-timestamp-blocked.png)
-
-**Use screenshot:** GPO inbound rule named `Block ICMP Timestamp Requests`
+<img width="1728" height="1117" alt="Icmp Timestamp Blocked by FW" src="https://github.com/user-attachments/assets/a738a7e9-4a19-4102-a45b-04e430fbd523" />
 
 ---
 
-## 14.5 Windows TCP Timestamp Mitigation
+## 4.5 Windows TCP Timestamp Mitigation
 
 TCP timestamps were disabled on Windows through the registry.
 
@@ -564,15 +548,11 @@ Tcp1323Opts = 0
 
 #### Windows TCP timestamps disabled in registry
 
-**Screenshot placement: Phase 14 Screenshot 5**
-
-![Windows TCP timestamps disabled](screenshots/hardening/02-windows-tcp-timestamps-disabled.png)
-
-**Use screenshot:** Registry Editor showing `Tcp1323Opts` set to `0`
+<img width="1728" height="1117" alt="Windows Tcp Timestamp Disabled Hardening" src="https://github.com/user-attachments/assets/2306a306-0365-4b89-ba34-49234732e825" />
 
 ---
 
-## 14.6 Linux TCP Timestamp Mitigation
+## 4.6 Linux TCP Timestamp Mitigation
 
 TCP timestamps were disabled on the Ubuntu Wazuh/OpenVAS server.
 
@@ -592,15 +572,11 @@ net.ipv4.tcp_timestamps = 0
 
 #### Linux TCP timestamps disabled
 
-**Screenshot placement: Phase 14 Screenshot 6**
-
-![Linux TCP timestamps disabled](screenshots/hardening/03-linux-tcp-timestamps-disabled.png)
-
-**Use screenshot:** Ubuntu terminal showing `net.ipv4.tcp_timestamps = 0`
+<img width="1728" height="1117" alt="Linux TCP Timestamp Disabled Hardening" src="https://github.com/user-attachments/assets/95e1d521-cc1f-475a-969b-5accb4b713f9" />
 
 ---
 
-## 14.7 SSH MAC Hardening
+## 4.7 SSH MAC Hardening
 
 Weak SSH MAC algorithms were removed from the Ubuntu server configuration.
 
@@ -620,15 +596,11 @@ macs hmac-sha2-512,hmac-sha2-256
 
 #### SSH MAC hardening verification
 
-**Screenshot placement: Phase 14 Screenshot 7**
-
-![SSH MAC hardening](screenshots/hardening/04-ssh-macs-hardened.png)
-
-**Use screenshot:** Ubuntu terminal showing hardened SSH MAC list
+<img width="1728" height="1117" alt="Ubuntu Server Weak Mac Hardening" src="https://github.com/user-attachments/assets/48f79bd9-17df-4c12-88be-79df38556a00" />
 
 ---
 
-## 14.8 Wazuh Enrollment Service Review
+## 4.8 Wazuh Enrollment Service Review
 
 Greenbone identified Wazuh `ossec-authd` on TCP 1515 as a high-severity issue.
 
@@ -642,11 +614,7 @@ sudo ss -tulpn | grep 1515
 
 #### Wazuh authd listening on TCP 1515
 
-**Screenshot placement: Phase 14 Screenshot 8**
-
-![Wazuh authd listening](screenshots/hardening/05-wazuh-authd-listening.png)
-
-**Use screenshot:** Ubuntu terminal showing TCP 1515 listening
+<img width="1728" height="1117" alt="Authd Listening" src="https://github.com/user-attachments/assets/7d720f6b-bc50-43ab-96a9-1bbc60316e71" />
 
 ### Configuration Reviewed
 
@@ -656,11 +624,7 @@ The Wazuh configuration was reviewed to confirm enrollment authentication.
 
 #### Wazuh authd password configuration
 
-**Screenshot placement: Phase 14 Screenshot 9**
-
-![Wazuh authd configuration](screenshots/hardening/06-wazuh-authd-password-enabled.png)
-
-**Use screenshot:** `ossec.conf` showing `<use_password>yes</use_password>`
+<img width="1728" height="1117" alt="authd Password Enabled" src="https://github.com/user-attachments/assets/f98953f4-3f2d-4017-8732-65404d0a81bb" />
 
 ### Risk Decision
 
@@ -694,7 +658,7 @@ Then restart Wazuh and verify port 1515 is no longer listening.
 
 ---
 
-## 14.9 Secure Cookie Finding
+## 4.9 Secure Cookie Finding
 
 Greenbone identified:
 
@@ -712,11 +676,7 @@ This was documented as an accepted risk because modifying Wazuh dashboard cookie
 
 #### Secure cookie accepted risk note
 
-**Screenshot placement: Phase 14 Screenshot 10**
-
-![Secure cookie accepted risk](screenshots/hardening/07-secure-cookie-accepted-risk.png)
-
-**Use screenshot:** Notepad documenting accepted risk for Missing Secure Cookie Attribute
+<img width="1728" height="1117" alt="Secure Cookie Reasoning" src="https://github.com/user-attachments/assets/dc2b3d0a-e012-4e88-9d2b-5e823c3d5572" />
 
 ---
 
