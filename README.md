@@ -1,4 +1,20 @@
-# Active Directory SOC Detection & Vulnerability Management Lab
+# Enterprise Active Directory SOC & Vulnerability Management Lab
+
+## Table of Contents
+
+- Project Overview
+- Lab Architecture
+- Tools Used
+- Phase 1: Detection Engineering
+  - 1.1 Nmap Reconnaissance
+  - 1.2 Failed Domain Logons
+  - 1.3 PowerShell Detection
+  - 1.4 Service Creation Detection
+- Phase 2: Vulnerability Management
+- Phase 3: Security Hardening & Remediation
+- Key Outcomes
+- Key Skills Demonstrated
+- Future Improvements
 
 ## Project Overview
 
@@ -36,6 +52,25 @@ The project includes:
 | ----------------- | ------------------------- |
 | Wazuh Dashboard   | https://172.16.0.101:443      |
 | Greenbone/OpenVAS | https://172.16.0.101:8443 |
+
+---
+
+## Skills Demonstrated
+
+This project demonstrates hands-on experience with the following technologies and security disciplines:
+
+- Active Directory
+- Group Policy
+- Sysmon
+- Wazuh SIEM
+- OpenVAS
+- Vulnerability Management
+- Windows Event Analysis
+- PowerShell Logging
+- Threat Detection
+- MITRE ATT&CK Mapping
+- Security Hardening
+- Risk Management
 
 ---
 
@@ -358,7 +393,7 @@ https://172.16.0.101:8443
 
 #### Greenbone/OpenVAS login page
 
-<img width="1728" height="1117" alt="Wazuh Login:Url" src="https://github.com/user-attachments/assets/3e5f8da0-d710-4c85-adb9-c2abfbaf9d1e" />
+<img width="1728" height="1117" alt="OpenVAS Login:Url" src="https://github.com/user-attachments/assets/d1b558a7-245a-4755-8bc7-4d774e108e7f" />
 
 ---
 
@@ -732,6 +767,17 @@ The service was still listening through Docker proxy, so the finding was documen
 
 ---
 
+## Lab Metrics
+
+- 4 virtual machines deployed
+- 3 monitored endpoints
+- 4 attack simulations executed
+- 5 OpenVAS findings analyzed
+- 6 security hardening controls implemented
+- Multiple MITRE ATT&CK techniques mapped and detected
+
+---
+
 # Key Outcomes
 
 - Successfully deployed Active Directory environment
@@ -766,6 +812,18 @@ The service was still listening through Docker proxy, so the finding was documen
 * Windows Firewall configuration
 * Linux sysctl hardening
 * SSH hardening
+
+---
+
+## Future Improvements
+
+- Active Directory Certificate Services (ADCS)
+- Sysmon custom detections
+- Sigma rules
+- Custom Wazuh correlation rules
+- Vulnerability scanning automation
+- Threat hunting dashboards
+- Incident response playbooks
 
 ---
 
