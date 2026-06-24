@@ -55,25 +55,6 @@ The project includes:
 
 ---
 
-## Skills Demonstrated
-
-This project demonstrates hands-on experience with the following technologies and security disciplines:
-
-- Active Directory
-- Group Policy
-- Sysmon
-- Wazuh SIEM
-- OpenVAS
-- Vulnerability Management
-- Windows Event Analysis
-- PowerShell Logging
-- Threat Detection
-- MITRE ATT&CK Mapping
-- Security Hardening
-- Risk Management
-
----
-
 ## Tools Used
 
 * Windows Server 2025
@@ -792,13 +773,17 @@ The service was still listening through Docker proxy, so the finding was documen
 
 # Key Skills Demonstrated
 
+This project demonstrates hands-on experience with the following technologies and security disciplines:
+
 * Active Directory administration
 * Domain Controller management
 * Windows endpoint monitoring
+* Windows Event Analysis
 * Wazuh SIEM deployment
 * Sysmon telemetry collection
 * PowerShell logging
 * Detection engineering
+* Threat detection
 * Threat hunting
 * MITRE ATT&CK mapping
 * Nmap reconnaissance detection
@@ -806,7 +791,10 @@ The service was still listening through Docker proxy, so the finding was documen
 * PowerShell activity detection
 * Windows service creation detection
 * Vulnerability scanning with Greenbone/OpenVAS
+* Vulnerability management
 * Vulnerability remediation
+* Security hardening
+* Risk management
 * Risk acceptance documentation
 * Group Policy hardening
 * Windows Firewall configuration
