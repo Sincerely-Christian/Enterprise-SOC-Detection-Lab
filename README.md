@@ -77,7 +77,7 @@ The project includes:
 
 # Phase 1 - Detection Engineering
 
-Phase 1 generated controlled security events and verified that the lab could detect them through Windows logs, Sysmon, and Wazuh.
+Phase 1 focused on generating controlled security events and validating that each event was successfully detected through Windows Event Logs, Sysmon, and Wazuh.
 
 ---
 
@@ -750,12 +750,16 @@ The service was still listening through Docker proxy, so the finding was documen
 
 ## Lab Metrics
 
-- 4 virtual machines deployed
-- 3 monitored endpoints
-- 4 attack simulations executed
-- 5 OpenVAS findings analyzed
-- 6 security hardening controls implemented
-- Multiple MITRE ATT&CK techniques mapped and detected
+- 4 Virtual Machines Deployed
+- 1 Active Directory Domain
+- 1 Windows Server 2025 Domain Controller
+- 1 Windows 11 Domain-Joined Client
+- 1 Ubuntu Security Server hosting Wazuh and Greenbone/OpenVAS
+- 1 Kali Linux Attack Workstation
+- 4 Detection Scenarios Executed
+- 3 Hosts Assessed with Greenbone/OpenVAS
+- 7 Security Hardening Controls Implemented
+- 4 MITRE ATT&CK Techniques Demonstrated
 
 ---
 
@@ -815,6 +819,12 @@ This project demonstrates hands-on experience with the following technologies an
 
 ---
 
+## Lessons Learned
+
+This project provided practical experience building, monitoring, attacking, hardening, and validating a small enterprise environment. It reinforced the relationship between Windows administration, detection engineering, vulnerability management, and security operations while highlighting the importance of documenting both remediation efforts and accepted risks.
+
+---
+
 # Final Outcome
 
 This lab demonstrates a complete SOC workflow:
@@ -831,5 +841,4 @@ Validate Remediation
 Document Risk
 ```
 
-This project shows practical experience with both blue-team detection and vulnerability management in a realistic Active Directory lab environment.
  
