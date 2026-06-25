@@ -374,7 +374,7 @@ https://172.16.0.101:8443
 
 #### Greenbone/OpenVAS login page
 
-<img width="1728" height="1117" alt="OpenVAS Login:Url" src="https://github.com/user-attachments/assets/d1b558a7-245a-4755-8bc7-4d774e108e7f" />
+<img width="1728" height="1117" alt="OpenVAS Login Screen" src="https://github.com/user-attachments/assets/d1b558a7-245a-4755-8bc7-4d774e108e7f" />
 
 ---
 
